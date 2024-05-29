@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import DataTable from '../../components/Table/Table';
 import { GridColDef } from '@mui/x-data-grid';
-import { Remove, getFindAll } from '../../services/teachers.services';
-import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert } from '@mui/material';
+import { Remove, getFindAll } from '../../services/students.services';
+import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, DialogContentText } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import Form from './Form';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
+import Confirm from '../../components/Dialog/Confirm';
 
-const Teacher = () => {
+const Students = () => {
 
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
@@ -18,6 +21,8 @@ const Teacher = () => {
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState(0);
   const [editData, setEditData] = useState<any>();
+  const [openDelete, setDelete] = useState(false);
+  const [deleteData, setDeleteData] = useState<any[]>([]);
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'last_name', headerName: 'Apellido', width: 200 },
@@ -65,9 +70,8 @@ const Teacher = () => {
   };
 
   const handleDelete = async (data: any) => {
-    const response = await Remove(data.id)
-    setItems(items.filter((row: any) => row.id !== data.id))
-    showAlert('error','El profesor se elimino correctamente')
+   setDelete(true)
+   setDeleteData(data)
   };
   const handleEdit = async (data: any) => {
     
@@ -85,7 +89,7 @@ const Teacher = () => {
     if(action === 0){
     setItems(prevItems => [...prevItems, data]);
     setOpen(close)
-    showAlert('success','El profesor se creo correctamente')
+    showAlert('success','El Estudiante se creo correctamente')
     }else{
       updateTeacher(data)
       setOpen(close)
@@ -99,7 +103,7 @@ const Teacher = () => {
     if (index !== -1) {
       updatedData[index] = data
       setItems(updatedData)
-      showAlert('success','El profesor se actualizo correctamente')
+      showAlert('success','El Estudiante se actualizo correctamente')
     }
   }
   const showAlert = (type:any, message:any) => {
@@ -110,16 +114,25 @@ const Teacher = () => {
       setOpenAlert(false);
     }, 5000);
   };
+  const handleDeleteAcept = async () => {
+    const response = await Remove(deleteData.id)
+    setItems(items.filter((row: any) => row.id !== deleteData.id))
+    showAlert('error','El Estudiante se elimino correctamente')
+    setDelete(false)
+  }
+  const handleCloseDelete = () => {
+    setDelete(false)
+  }
   return (
     <>
       <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
 
         <Button variant="contained" disableElevation startIcon={<AddIcon />} onClick={handleClickOpen}>
-          Crear Profesor
+          Crear Estudiante
         </Button>
 
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle sx={{ textAlign: 'center', bgcolor: '#1976d2', color: 'white' }}> { action == 1 ? 'Editar Profesor' : 'Crear profesor' }</DialogTitle>
+          <DialogTitle sx={{ textAlign: 'center', bgcolor: '#1976d2', color: 'white' }}> { action == 1 ? 'Editar Estudiante' : 'Crear Estudiante' }</DialogTitle>
           <DialogContent>
             <Form onData={handleDataFromChild} action={action} editData={editData} />
           </DialogContent>
@@ -136,8 +149,9 @@ const Teacher = () => {
           {openAlertMessage}
         </Alert>
       </Snackbar>
+      <Confirm  openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept}/>
     </>
   );
 }
 
-export default Teacher;
+export default Students;

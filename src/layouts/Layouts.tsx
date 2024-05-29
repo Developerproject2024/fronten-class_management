@@ -7,6 +7,7 @@ import Login from '../components/Login/Login';
 import Home from '../pages/Home/Home';
 import Teacher from '../pages/Teachers/Teachers';
 import Footer from '../components/Footer/Footer';
+import Students from '../pages/Students/Students';
 
 function AppLayout() {
     const { isAuthenticated } :any = useAuth();
@@ -21,6 +22,7 @@ function AppLayout() {
                 <Route path="/" element={<Login />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/teachers" element={<Teacher />} />
+                <Route path="/students" element={<Students />} />
               </Routes>
             </Container>
             <Footer />

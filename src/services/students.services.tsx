@@ -1,5 +1,5 @@
 import axiosInstance from '../utils/axiosInstance';
-const ENPOINT = '/teachers'
+const ENPOINT = '/students'
 
 export const getFindAll = async () : Promise<string> => {
   try {

@@ -10,7 +10,7 @@ import { emailPattern } from '../../utils/regular.expressions'
 
 function Login() {
   const [error, setError] = useState(false);
-  const { login } = useAuth();
+  const { login } : any= useAuth();
   const navigate = useNavigate();
   const {
     register,
