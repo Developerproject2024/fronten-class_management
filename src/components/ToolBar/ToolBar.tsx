@@ -14,17 +14,41 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { useAuth } from '../../Auth/AuthContext';
 
 interface Props {
   window?: () => Window;
 }
 
 const drawerWidth = 240;
-const navItems = ['Profesores', 'Estudiantes', 'Clases', 'Salir'];
+const navItems = [
+  {
+    id:1,
+    name: 'Profesores',
+    route:'/teachers'
+  },
+  {
+    id:2,
+    name: 'Estudiantes',
+    route:'/home'
+  },
+  {
+    
+    id:3,
+    name: 'Clases',
+    route:'/home'
+  },
+  {
+    id:4,
+    name: 'Salir',
+    route:'/'
+  }
+];
 
 export default function DrawerAppBar(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const { logout }: any = useAuth();
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -32,9 +56,9 @@ export default function DrawerAppBar(props: Props) {
 
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    console.log('entroo')
-    navigate('/teachers');
+  const handleClick = (router:string) => {
+    if(router === '/') return logout()
+    navigate(router);
   };
 
   const drawer = (
@@ -44,10 +68,10 @@ export default function DrawerAppBar(props: Props) {
       </Typography>
       <Divider />
       <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
+        {navItems.map((item:any) => (
+          <ListItem key={item.id} disablePadding>
             <ListItemButton sx={{ textAlign: 'center' }}>
-              <ListItemText primary={item}  onClick={handleClick} />
+              <ListItemText primary={item.name} onClick={() =>handleClick(item.route)} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -76,12 +100,12 @@ export default function DrawerAppBar(props: Props) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
           >
-           Sistema agendamiento de clases
+            Sistema agendamiento de clases
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: '#fff' }} onClick={handleClick}>
-                {item}
+            {navItems.map((item:any) => (
+              <Button key={item.id} sx={{ color: '#fff' }} onClick={() => handleClick(item.route)}>
+                {item.name}
               </Button>
             ))}
           </Box>
@@ -94,7 +118,7 @@ export default function DrawerAppBar(props: Props) {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
@@ -106,7 +130,7 @@ export default function DrawerAppBar(props: Props) {
       </nav>
       <Box component="main" sx={{ p: 3 }}>
         <Toolbar />
-        
+
       </Box>
     </Box>
   );

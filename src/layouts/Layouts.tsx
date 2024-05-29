@@ -32,7 +32,6 @@ function AppLayout() {
             <Route path="/login" element={<Login />} />
             <Route path="*" element={<Login />} />
             </Routes>
-            <Footer />
           </Container>
         )}
       </Box>

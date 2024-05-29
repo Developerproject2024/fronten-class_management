@@ -1,26 +1,47 @@
-import React, { useState } from 'react';
+
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField, Grid, Paper, Typography, Box } from '@mui/material';
+import { useForm } from 'react-hook-form'
+import { Button, TextField, Grid, Paper, Typography, Box, Alert } from '@mui/material';
 import { useAuth } from '../../Auth/AuthContext';
+import { getItems } from '../../services/login.services';
+import { useState } from 'react';
+import IFormInput from '../../Auth/interfaces/index.interfaces'
+import { emailPattern } from '../../utils/regular.expressions'
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    clearErrors,
+    setValue,
+  } = useForm<IFormInput>();
 
-  const handleLogin = (event:any) => {
-    event.preventDefault();
-    if (email === 'usuario@example.com' && password === 'contraseña') {
+  const onSubmit = async (data: any) => {
+    const response: any = await getItems(data);
+    if (response.access_token) {
+      localStorage.setItem('token', response.access_token)
       login();
       navigate('/home');
-    } else {
-      alert('Credenciales inválidas. Por favor, inténtalo de nuevo.');
     }
+    setError(true)
   };
 
+  const handleInputChange = (name: keyof IFormInput) => {
+    return (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(name, event.target.value, { shouldValidate: true });
+      clearErrors(name);
+      setError(false)
+    };
+  };
+
+
+
   return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
+    <Grid container component="main" sx={{ height: '80vh' }}>
       <Grid
         item
         xs={12}
@@ -39,35 +60,43 @@ function Login() {
         }}
       >
         <div>
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" sx={{ mt: 4, pl: 5 }}>
             Iniciar sesión
           </Typography>
-          <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1, p: 3 }}>
             <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
+              id="username"
               label="Correo electrónico"
-              name="email"
-              autoComplete="email"
+              type="email"
+              variant="outlined"
+              {...register('username', {
+                required: 'El correo electrónico es obligatorio',
+                pattern: {
+                  value: emailPattern,
+                  message: 'El correo electrónico no es válido',
+                },
+              })}
+              error={!!errors.username}
+              helperText={errors.username?.message}
+              fullWidth
+              required
               autoFocus
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              margin="normal"
+              onChange={handleInputChange('username')}
             />
             <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
+              id="password"
               label="Contraseña"
               type="password"
-              id="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              variant="outlined"
+              {...register('password', { required: 'La contraseña es obligatorio' })}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              fullWidth
+              required
+              autoFocus
+              margin="normal"
+              onChange={handleInputChange('password')}
             />
             <Button
               type="submit"
@@ -78,6 +107,9 @@ function Login() {
             >
               Iniciar sesión
             </Button>
+            {error && (
+              <Alert severity="error">Por favor verifique sus credenciales de ingreso</Alert>
+            )}
           </Box>
         </div>
       </Grid>
