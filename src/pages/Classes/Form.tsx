@@ -25,6 +25,7 @@ function Form({ onData, action, editData} : any) {
   };
 
   const onSubmit = async (data: any) => {
+    console.log(action)
     if (action === 0) {
       createData(data)
     }

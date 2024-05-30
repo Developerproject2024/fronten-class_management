@@ -1,6 +1,5 @@
 import {  Button, Dialog, DialogTitle, DialogContent, DialogActions, DialogContentText } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 
 const Confirm = ({openDelete, handleCloseDelete, handleDeleteAcept}:any) => {

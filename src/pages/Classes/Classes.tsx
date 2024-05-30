@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import Form from './Form';
 import Confirm from '../../components/Dialog/Confirm';
 import DialogSelect from '../../components/Dialog/Select';
+import DialogPreview from '../../components/Dialog/Preview';
 
 const Classes = () => {
 
@@ -26,6 +27,10 @@ const Classes = () => {
   const [openSelect, setOpenSelect] = useState(false);
   const [optionSelect, setOptionSelect] = useState<any[]>([]);
   const [classId, setclassId] = useState<number>(0);
+  const [openStudents, setStudents] = useState(false);
+  const [dataStudents, setDataStudents] = useState<any[]>([]);
+  const [dataTitle, setDataTitle] = useState<any[]>([]);
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'name', headerName: 'Nombre', width: 100 },
@@ -56,7 +61,7 @@ const Classes = () => {
           <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
             Profesor
           </Button>
-          <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
+          <Button variant="contained" color="primary" onClick={() => handlePreviewStudents(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
             estudiantes
           </Button>
         </Box>
@@ -108,7 +113,6 @@ const Classes = () => {
     setDeleteData(data)
   };
   const handleEdit = async (data: any) => {
-
     setAction(1)
     setOpen(true)
     setEditData(data)
@@ -120,18 +124,24 @@ const Classes = () => {
 
 
   const handleDataFromChild = (close: boolean, data: any) => {
-    if (action === 0) {
-      setItems(prevItems => [...prevItems, data]);
-      setOpen(close)
-      showAlert('success', 'El clases se creo correctamente')
+    console.log('entoo', close, data)
+    if (data !== undefined) {
+      if (action === 0) {
+        setItems(prevItems => [...prevItems, data]);
+        setOpen(close)
+        showAlert('success', 'El clases se creo correctamente')
+      } else {
+        updateTeacher(data)
+        setOpen(close)
+      }
     } else {
-      updateTeacher(data)
       setOpen(close)
     }
 
   };
 
   const updateTeacher = (data: any) => {
+    console.log('llego')
     const updatedData = [...items];
     const index = items.findIndex(obj => obj.id === data.id);
     if (index !== -1) {
@@ -155,6 +165,7 @@ const Classes = () => {
     setDelete(false)
   }
   const handleCloseDelete = () => {
+    console.log('llego')
     setDelete(false)
   }
   const handleAssingTeacher = async (data: any) => {
@@ -178,6 +189,16 @@ const Classes = () => {
     setclassId(data.id)
     setOpenSelect(true);
   };
+
+  const handlePreviewStudents = (data: any) => {
+    setStudents(true)
+    setDataStudents(data.students)
+    setDataTitle(data.name)
+  }
+
+  const handleClosePreviewStudents = () => {
+    setStudents(false)
+  }
 
 
   return (
@@ -208,6 +229,7 @@ const Classes = () => {
       </Snackbar>
       <Confirm openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept} />
       <DialogSelect open={openSelect} handleClose={handleCloseSelect} opciones={optionSelect} handleAssingTeacher={handleAssingTeacher} title="Profesor" />
+      <DialogPreview open={openStudents} rows={dataStudents} handleClose={handleClosePreviewStudents} title={dataTitle} />
 
     </>
   );
