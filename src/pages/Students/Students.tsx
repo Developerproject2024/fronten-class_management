@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import DataTable from '../../components/Table/Table';
 import { GridColDef } from '@mui/x-data-grid';
 import { Remove, getFindAll } from '../../services/students.services';
+import { getFindAll as  getFindAllClass} from '../../services/classes.services';
 import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, DialogContentText } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +11,7 @@ import Form from './Form';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Confirm from '../../components/Dialog/Confirm';
+import DialogSelect from '../../components/Dialog/Select';
 
 const Students = () => {
 
@@ -23,23 +25,27 @@ const Students = () => {
   const [editData, setEditData] = useState<any>();
   const [openDelete, setDelete] = useState(false);
   const [deleteData, setDeleteData] = useState<any[]>([]);
+  const [openSelect, setOpenSelect] = useState(false);
+  const [optionSelect, setOptionSelect] = useState<any[]>([]);
+  const [classId, setclassId] = useState<number>(0);
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'last_name', headerName: 'Apellido', width: 200 },
+    { field: 'last_name', headerName: 'Apellido', width: 150 },
     { field: 'name', headerName: 'Nombre', width: 200 },
-    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'email', headerName: 'Email', width: 150 },
     {
       field: 'actions',
       headerName: 'Acciones',
       sortable: false,
-      width: 300,
+      width: 400,
       renderCell: (params) => (
         <Box>
           <Button variant="contained" color="success" onClick={() => handleEdit(params.row)} sx={{ ml: 2 }} size="small" startIcon={<EditIcon />}>
-
           </Button>
           <Button variant="contained" color="error" onClick={() => handleDelete(params.row)} sx={{ ml: 2 }} size="small" startIcon={<DeleteIcon />}>
-
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
+            Clases
           </Button>
         </Box>
       ),
@@ -48,7 +54,22 @@ const Students = () => {
   useEffect(() => {
     getFindAll()
       .then((response: any) => {
+        
         setItems(response);
+        setLoading(true)
+      })
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    getFindAllClass()
+      .then((response: any) => {
+        setOptionSelect(response)
         setLoading(true)
       })
       .then(() => {
@@ -70,11 +91,11 @@ const Students = () => {
   };
 
   const handleDelete = async (data: any) => {
-   setDelete(true)
-   setDeleteData(data)
+    setDelete(true)
+    setDeleteData(data)
   };
   const handleEdit = async (data: any) => {
-    
+
     setAction(1)
     setOpen(true)
     setEditData(data)
@@ -86,27 +107,27 @@ const Students = () => {
 
 
   const handleDataFromChild = (close: boolean, data: any) => {
-    if(action === 0){
-    setItems(prevItems => [...prevItems, data]);
-    setOpen(close)
-    showAlert('success','El Estudiante se creo correctamente')
-    }else{
+    if (action === 0) {
+      setItems(prevItems => [...prevItems, data]);
+      setOpen(close)
+      showAlert('success', 'El Estudiante se creo correctamente')
+    } else {
       updateTeacher(data)
       setOpen(close)
     }
-    
+
   };
 
-  const updateTeacher = (data:any) => {
+  const updateTeacher = (data: any) => {
     const updatedData = [...items];
     const index = items.findIndex(obj => obj.id === data.id);
     if (index !== -1) {
       updatedData[index] = data
       setItems(updatedData)
-      showAlert('success','El Estudiante se actualizo correctamente')
+      showAlert('success', 'El Estudiante se actualizo correctamente')
     }
   }
-  const showAlert = (type:any, message:any) => {
+  const showAlert = (type: any, message: any) => {
     setOpenAlert(true);
     setOpenAlertType(type)
     setAlertMessage(message)
@@ -117,12 +138,34 @@ const Students = () => {
   const handleDeleteAcept = async () => {
     const response = await Remove(deleteData.id)
     setItems(items.filter((row: any) => row.id !== deleteData.id))
-    showAlert('error','El Estudiante se elimino correctamente')
+    showAlert('error', 'El Estudiante se elimino correctamente')
     setDelete(false)
   }
   const handleCloseDelete = () => {
     setDelete(false)
   }
+
+  const handleAssingTeacher = async (data: any) => {
+    // setLoading(true);
+    // const response = await relationClassByTeacher(classId, {
+    //   "teacherId": data
+    // })
+
+    // const result: any[] = await getFindAll()
+    // setItems(result)
+    // setLoading(false);
+  }
+
+
+
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
+
+  const handleOpenSelect = (data: any) => {
+    setclassId(data.id)
+    setOpenSelect(true);
+  };
   return (
     <>
       <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
@@ -132,7 +175,7 @@ const Students = () => {
         </Button>
 
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle sx={{ textAlign: 'center', bgcolor: '#1976d2', color: 'white' }}> { action == 1 ? 'Editar Estudiante' : 'Crear Estudiante' }</DialogTitle>
+          <DialogTitle sx={{ textAlign: 'center', bgcolor: '#1976d2', color: 'white' }}> {action == 1 ? 'Editar Estudiante' : 'Crear Estudiante'}</DialogTitle>
           <DialogContent>
             <Form onData={handleDataFromChild} action={action} editData={editData} />
           </DialogContent>
@@ -149,7 +192,10 @@ const Students = () => {
           {openAlertMessage}
         </Alert>
       </Snackbar>
-      <Confirm  openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept}/>
+      <Confirm openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept} />
+      {openSelect && (
+      <DialogSelect open={openSelect} handleClose={handleCloseSelect} opciones={optionSelect} handleAssingTeacher={handleAssingTeacher} title="Clase" />
+      )}
     </>
   );
 }

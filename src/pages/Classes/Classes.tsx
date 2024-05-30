@@ -28,12 +28,12 @@ const Classes = () => {
   const [classId, setclassId] = useState<number>(0);
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'name', headerName: 'Nombre', width: 200 },
+    { field: 'name', headerName: 'Nombre', width: 100 },
     { field: 'description', headerName: 'Descripcion', width: 200 },
     {
       field: 'teacher', headerName: 'Profersor', width: 250,
       valueGetter: (params: any) => {
-        if(params !== undefined && params !== null){
+        if (params !== undefined && params !== null) {
           const usuario = params.name;
           return usuario ? `${params.name} ${params.last_name} (${params.email})` : '';
         }
@@ -53,8 +53,11 @@ const Classes = () => {
           <Button variant="contained" color="error" onClick={() => handleDelete(params.row)} sx={{ ml: 2 }} size="small" startIcon={<DeleteIcon />}>
 
           </Button>
-          <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<DeleteIcon />}>
-            Asignar Profesor
+          <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
+            Profesor
+          </Button>
+          <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
+            estudiantes
           </Button>
         </Box>
       ),
@@ -159,10 +162,10 @@ const Classes = () => {
     const response = await relationClassByTeacher(classId, {
       "teacherId": data
     })
-   
-     const result: any[] = await getFindAll()
-     setItems(result)
-     setLoading(false);
+
+    const result: any[] = await getFindAll()
+    setItems(result)
+    setLoading(false);
   }
 
 
@@ -204,9 +207,8 @@ const Classes = () => {
         </Alert>
       </Snackbar>
       <Confirm openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept} />
-      {openSelect && (
-        <DialogSelect open={openSelect} handleClose={handleCloseSelect} opciones={optionSelect} handleAssingTeacher={handleAssingTeacher} />
-      )}
+      <DialogSelect open={openSelect} handleClose={handleCloseSelect} opciones={optionSelect} handleAssingTeacher={handleAssingTeacher} title="Profesor" />
+
     </>
   );
 }

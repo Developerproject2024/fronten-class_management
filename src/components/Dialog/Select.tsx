@@ -1,7 +1,7 @@
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import React, { useState } from 'react';
 
-const DialogSelect = ({ open, handleClose, opciones, handleAssingTeacher }: any) => {
+const DialogSelect = ({ open, handleClose, opciones, handleAssingTeacher, title }: any) => {
     const [selectedOption, setSelectedOption] = useState('');
 
     const handleChange = (event) => {
@@ -17,7 +17,7 @@ const DialogSelect = ({ open, handleClose, opciones, handleAssingTeacher }: any)
 
     return (
         <Dialog open={open} onClose={handleClose} fullWidth     >
-            <DialogTitle>Seleccionar Opción</DialogTitle>
+            <DialogTitle>Seleccionar {title}</DialogTitle>
             <DialogContent>
                 <FormControl fullWidth sx={{ mt: 2 }}>
                     <InputLabel id="select-label"></InputLabel>
