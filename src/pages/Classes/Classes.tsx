@@ -25,10 +25,21 @@ const Classes = () => {
   const [deleteData, setDeleteData] = useState<any[]>([]);
   const [openSelect, setOpenSelect] = useState(false);
   const [optionSelect, setOptionSelect] = useState<any[]>([]);
+  const [classId, setclassId] = useState<number>(0);
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'name', headerName: 'Nombre', width: 200 },
     { field: 'description', headerName: 'Descripcion', width: 200 },
+    {
+      field: 'teacher', headerName: 'Profersor', width: 250,
+      valueGetter: (params: any) => {
+        if(params !== undefined && params !== null){
+          const usuario = params.name;
+          return usuario ? `${params.name} ${params.last_name} (${params.email})` : '';
+        }
+        return ''
+      },
+    },
     {
       field: 'actions',
       headerName: 'Acciones',
@@ -90,11 +101,11 @@ const Classes = () => {
   };
 
   const handleDelete = async (data: any) => {
-   setDelete(true)
-   setDeleteData(data)
+    setDelete(true)
+    setDeleteData(data)
   };
   const handleEdit = async (data: any) => {
-    
+
     setAction(1)
     setOpen(true)
     setEditData(data)
@@ -106,27 +117,27 @@ const Classes = () => {
 
 
   const handleDataFromChild = (close: boolean, data: any) => {
-    if(action === 0){
-    setItems(prevItems => [...prevItems, data]);
-    setOpen(close)
-    showAlert('success','El clases se creo correctamente')
-    }else{
+    if (action === 0) {
+      setItems(prevItems => [...prevItems, data]);
+      setOpen(close)
+      showAlert('success', 'El clases se creo correctamente')
+    } else {
       updateTeacher(data)
       setOpen(close)
     }
-    
+
   };
 
-  const updateTeacher = (data:any) => {
+  const updateTeacher = (data: any) => {
     const updatedData = [...items];
     const index = items.findIndex(obj => obj.id === data.id);
     if (index !== -1) {
       updatedData[index] = data
       setItems(updatedData)
-      showAlert('success','El clases se actualizo correctamente')
+      showAlert('success', 'El clases se actualizo correctamente')
     }
   }
-  const showAlert = (type:any, message:any) => {
+  const showAlert = (type: any, message: any) => {
     setOpenAlert(true);
     setOpenAlertType(type)
     setAlertMessage(message)
@@ -137,31 +148,35 @@ const Classes = () => {
   const handleDeleteAcept = async () => {
     const response = await Remove(deleteData.id)
     setItems(items.filter((row: any) => row.id !== deleteData.id))
-    showAlert('error','El clases se elimino correctamente')
+    showAlert('error', 'El clases se elimino correctamente')
     setDelete(false)
   }
   const handleCloseDelete = () => {
     setDelete(false)
   }
-  const handleAssingTeacher = async (data:any) => {
-    console.log('entroooo')
-    const response = await relationClassByTeacher(data.id, {
-      "teacherId": 1
-  })
-    console.log(response)
+  const handleAssingTeacher = async (data: any) => {
+    setLoading(true);
+    const response = await relationClassByTeacher(classId, {
+      "teacherId": data
+    })
+   
+     const result: any[] = await getFindAll()
+     setItems(result)
+     setLoading(false);
   }
 
-  
 
-    const handleCloseSelect = () => {
-      setOpenSelect(false);
-    };
 
-    const handleOpenSelect = (data:any) => {
-        setOpenSelect(true);
-    };
+  const handleCloseSelect = () => {
+    setOpenSelect(false);
+  };
 
-   
+  const handleOpenSelect = (data: any) => {
+    setclassId(data.id)
+    setOpenSelect(true);
+  };
+
+
   return (
     <>
       <Box display="flex" justifyContent="flex-end" sx={{ mb: 2 }}>
@@ -171,7 +186,7 @@ const Classes = () => {
         </Button>
 
         <Dialog open={open} onClose={handleClose}>
-          <DialogTitle sx={{ textAlign: 'center', bgcolor: '#1976d2', color: 'white' }}> { action == 1 ? 'Editar clases' : 'Crear clases' }</DialogTitle>
+          <DialogTitle sx={{ textAlign: 'center', bgcolor: '#1976d2', color: 'white' }}> {action == 1 ? 'Editar clases' : 'Crear clases'}</DialogTitle>
           <DialogContent>
             <Form onData={handleDataFromChild} action={action} editData={editData} />
           </DialogContent>
@@ -188,9 +203,9 @@ const Classes = () => {
           {openAlertMessage}
         </Alert>
       </Snackbar>
-      <Confirm  openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept}/>
+      <Confirm openDelete={openDelete} handleCloseDelete={handleCloseDelete} handleDeleteAcept={handleDeleteAcept} />
       {openSelect && (
-      <DialogSelect open={openSelect} handleClose={handleCloseSelect} opciones={optionSelect}/>
+        <DialogSelect open={openSelect} handleClose={handleCloseSelect} opciones={optionSelect} handleAssingTeacher={handleAssingTeacher} />
       )}
     </>
   );
