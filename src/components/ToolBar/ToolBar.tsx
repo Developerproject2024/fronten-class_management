@@ -36,7 +36,7 @@ const navItems = [
     
     id:3,
     name: 'Clases',
-    route:'/home'
+    route:'/classes'
   },
   {
     id:4,
