@@ -7,6 +7,7 @@ import { Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackba
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import PreviewIcon from '@mui/icons-material/Preview';
 import Form from './Form';
 import Confirm from '../../components/Dialog/Confirm';
 import DialogSelect from '../../components/Dialog/Select';
@@ -61,7 +62,7 @@ const Classes = () => {
           <Button variant="contained" color="primary" onClick={() => handleOpenSelect(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
             Profesor
           </Button>
-          <Button variant="contained" color="primary" onClick={() => handlePreviewStudents(params.row)} sx={{ ml: 2 }} size="small" startIcon={<AddIcon />}>
+          <Button variant="contained" color="primary" onClick={() => handlePreviewStudents(params.row)} sx={{ ml: 2 }} size="small" startIcon={<PreviewIcon />}>
             estudiantes
           </Button>
         </Box>
